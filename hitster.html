@@ -22,9 +22,6 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
-        iframe {
-            display: none;
-        }
         button {
             margin-top: 15px;
             padding: 10px 20px;
@@ -73,33 +70,24 @@
 
         function getSongIdFromUrl() {
             const params = new URLSearchParams(window.location.search);
-            return params.get('song') || localStorage.getItem('lastSong'); // Letzten Song speichern
+            return params.get('song') || localStorage.getItem('lastSong');
         }
 
         function updateUrl(songId) {
             history.replaceState(null, "", "?song=" + songId);
-            localStorage.setItem('lastSong', songId); // Song speichern
-        }
-
-        function onYouTubeIframeAPIReady() {
-            let songId = getSongIdFromUrl();
-            if (songId) {
-                loadPlayer(songId);
-            } else {
-                document.getElementById('player').innerHTML = '<h2>Kein Song ausgewählt!</h2>';
-            }
+            localStorage.setItem('lastSong', songId);
         }
 
         function loadPlayer(songId) {
             if (player) {
-                player.loadVideoById(songId); // Falls der Player existiert, nur das Video ändern
+                player.loadVideoById(songId);
             } else {
                 player = new YT.Player('player', {
                     height: '0',
                     width: '0',
                     videoId: songId,
                     playerVars: {
-                        'autoplay': 0,
+                        'autoplay': 1,
                         'controls': 0,
                         'showinfo': 0,
                         'modestbranding': 1,
@@ -128,19 +116,20 @@
             });
         }
 
-        // Überwache URL-Änderungen (neuer QR-Code)
-        setInterval(() => {
+        function checkForNewSong() {
             let newSongId = getSongIdFromUrl();
             if (newSongId && (!player || player.getVideoData().video_id !== newSongId)) {
                 loadPlayer(newSongId);
                 updateUrl(newSongId);
             }
-        }, 1000);
+        }
 
         let tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         let firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        setInterval(checkForNewSong, 1000);
     </script>
 </body>
 </html>
