@@ -68,13 +68,32 @@
 
     <script>
         let player;
-        const params = new URLSearchParams(window.location.search);
-        const songId = params.get('song');
         const playPauseButton = document.getElementById('playPauseButton');
         const volumeControl = document.getElementById('volumeControl');
 
+        function getSongIdFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('song') || localStorage.getItem('lastSong'); // Letzten Song speichern
+        }
+
+        function updateUrl(songId) {
+            history.replaceState(null, "", "?song=" + songId);
+            localStorage.setItem('lastSong', songId); // Song speichern
+        }
+
         function onYouTubeIframeAPIReady() {
+            let songId = getSongIdFromUrl();
             if (songId) {
+                loadPlayer(songId);
+            } else {
+                document.getElementById('player').innerHTML = '<h2>Kein Song ausgewählt!</h2>';
+            }
+        }
+
+        function loadPlayer(songId) {
+            if (player) {
+                player.loadVideoById(songId); // Falls der Player existiert, nur das Video ändern
+            } else {
                 player = new YT.Player('player', {
                     height: '0',
                     width: '0',
@@ -90,8 +109,6 @@
                         'onReady': onPlayerReady
                     }
                 });
-            } else {
-                document.getElementById('player').innerHTML = '<h2>Kein Song ausgewählt!</h2>';
             }
         }
 
@@ -110,6 +127,15 @@
                 player.setVolume(volumeControl.value);
             });
         }
+
+        // Überwache URL-Änderungen (neuer QR-Code)
+        setInterval(() => {
+            let newSongId = getSongIdFromUrl();
+            if (newSongId && (!player || player.getVideoData().video_id !== newSongId)) {
+                loadPlayer(newSongId);
+                updateUrl(newSongId);
+            }
+        }, 1000);
 
         let tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
