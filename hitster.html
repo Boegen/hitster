@@ -23,9 +23,9 @@
             text-align: center;
         }
         iframe {
-            display: none; /* Versteckt das Video */
+            display: none; /* Video bleibt unsichtbar */
         }
-        button {
+        button, input {
             margin-top: 15px;
             padding: 10px 20px;
             font-size: 16px;
@@ -38,33 +38,73 @@
         button:hover {
             background-color: #218838;
         }
+        input[type="range"] {
+            width: 100%;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="player-container">
         <h2>🎵 Errate den Song!</h2>
         <div id="player"></div>
-        <button id="playButton">Starte den Song</button>
+        <button id="playPauseButton">Starte den Song</button>
+        <br>
+        <label for="volumeControl">Lautstärke:</label>
+        <input type="range" id="volumeControl" min="0" max="100" value="100">
     </div>
 
     <script>
+        let player;
         const params = new URLSearchParams(window.location.search);
-        const songId = params.get('song'); // YouTube Video-ID
+        const songId = params.get('song');
         const playerDiv = document.getElementById('player');
-        const playButton = document.getElementById('playButton');
+        const playPauseButton = document.getElementById('playPauseButton');
+        const volumeControl = document.getElementById('volumeControl');
 
-        if (songId) {
-            playerDiv.innerHTML = `<iframe id="ytplayer" src="https://www.youtube.com/embed/${songId}?enablejsapi=1&autoplay=0&controls=0&showinfo=0&modestbranding=1&rel=0" allow="autoplay"></iframe>`;
-        } else {
-            playerDiv.innerHTML = '<h2>Kein Song ausgewählt!</h2>';
+        function onYouTubeIframeAPIReady() {
+            if (songId) {
+                player = new YT.Player('player', {
+                    height: '0',
+                    width: '0', // Unsichtbar
+                    videoId: songId,
+                    playerVars: {
+                        'autoplay': 0,
+                        'controls': 0,
+                        'showinfo': 0,
+                        'modestbranding': 1,
+                        'rel': 0
+                    },
+                    events: {
+                        'onReady': onPlayerReady
+                    }
+                });
+            } else {
+                playerDiv.innerHTML = '<h2>Kein Song ausgewählt!</h2>';
+            }
         }
 
-        playButton.addEventListener("click", function () {
-            if (songId) {
-                const iframe = document.getElementById('ytplayer');
-                iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-            }
-        });
+        function onPlayerReady(event) {
+            playPauseButton.addEventListener("click", function () {
+                if (player.getPlayerState() === 1) { // Läuft
+                    player.pauseVideo();
+                    playPauseButton.textContent = "Starte den Song";
+                } else { // Pausiert oder gestoppt
+                    player.playVideo();
+                    playPauseButton.textContent = "Pausiere den Song";
+                }
+            });
+
+            volumeControl.addEventListener("input", function () {
+                player.setVolume(volumeControl.value);
+            });
+        }
+
+        // YouTube API einbinden
+        let tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        let firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
     </script>
 </body>
 </html>
