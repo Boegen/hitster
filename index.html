@@ -4,28 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR-Code Scanner</title>
-    <script>
-        const params = new URLSearchParams(window.location.search);
-        const song = params.get("song");
-        if (song) {
-            window.location.href = "player.html?song=" + song;
-        }
-    </script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            text-align: center;
             background-color: #f4f4f4;
         }
         video {
             width: 300px;
             border: 2px solid black;
             border-radius: 10px;
+        }
+        canvas {
+            display: none;
         }
         button {
             margin-top: 15px;
@@ -41,19 +33,21 @@
 </head>
 <body>
     <h2>🎵 QR-Code scannen und Song starten</h2>
-    <video id="qr-video"></video>
+    <video id="qr-video" playsinline></video>
+    <canvas id="qr-canvas"></canvas>
     <button onclick="startScanner()">Scanner starten</button>
     <p id="result"></p>
 
     <script>
         let video = document.getElementById("qr-video");
+        let canvas = document.getElementById("qr-canvas");
+        let ctx = canvas.getContext("2d");
         let resultText = document.getElementById("result");
 
         function startScanner() {
             navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
                 .then((stream) => {
                     video.srcObject = stream;
-                    video.setAttribute("playsinline", true);
                     video.play();
                     scanQRCode();
                 })
@@ -61,9 +55,6 @@
         }
 
         function scanQRCode() {
-            let canvas = document.createElement("canvas");
-            let ctx = canvas.getContext("2d");
-
             setInterval(() => {
                 if (video.readyState === video.HAVE_ENOUGH_DATA) {
                     canvas.width = video.videoWidth;
@@ -74,10 +65,11 @@
 
                     if (qrCode) {
                         resultText.innerText = "Song gefunden: " + qrCode.data;
-                        window.location.href = "player.html?song=" + qrCode.data; // Wechselt zur Song-Seite
+                        video.srcObject.getTracks().forEach(track => track.stop()); // Kamera stoppen
+                        window.location.href = "player.html?song=" + qrCode.data; // Weiterleitung zum Player
                     }
                 }
-            }, 500);
+            }, 100); // Scan-Intervall (alle 100ms)
         }
     </script>
 </body>
