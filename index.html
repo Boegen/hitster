@@ -6,37 +6,18 @@
     <title>QR-Code Scanner</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.min.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f4f4f4;
-        }
-        video {
-            width: 300px;
-            border: 2px solid black;
-            border-radius: 10px;
-        }
-        canvas {
-            display: none;
-        }
-        button {
-            margin-top: 15px;
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            background-color: #007bff;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+        body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f4; }
+        video { width: 90%; max-width: 400px; border: 2px solid black; border-radius: 10px; margin-top: 10px; }
+        canvas { display: none; }
+        button { margin-top: 15px; padding: 10px 20px; font-size: 16px; border: none; background-color: #007bff; color: white; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
     <h2>🎵 QR-Code scannen und Song starten</h2>
     <video id="qr-video" playsinline></video>
     <canvas id="qr-canvas"></canvas>
-    <button onclick="startScanner()">Scanner starten</button>
-    <p id="result"></p>
+    <button onclick="startScanner()">📷 Scanner starten</button>
+    <p id="result">Scanne einen QR-Code...</p>
 
     <script>
         let video = document.getElementById("qr-video");
@@ -45,17 +26,26 @@
         let resultText = document.getElementById("result");
 
         function startScanner() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert("Dein Browser unterstützt keine Kamera-Nutzung!");
+                return;
+            }
+
             navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
                 .then((stream) => {
                     video.srcObject = stream;
+                    video.setAttribute("playsinline", true);
                     video.play();
                     scanQRCode();
                 })
-                .catch((err) => console.error("Kamera-Zugriff verweigert", err));
+                .catch((err) => {
+                    console.error("Kamera-Zugriff verweigert", err);
+                    alert("Kamera-Zugriff wurde blockiert! Bitte in den Einstellungen aktivieren.");
+                });
         }
 
         function scanQRCode() {
-            setInterval(() => {
+            let scanInterval = setInterval(() => {
                 if (video.readyState === video.HAVE_ENOUGH_DATA) {
                     canvas.width = video.videoWidth;
                     canvas.height = video.videoHeight;
@@ -64,12 +54,13 @@
                     let qrCode = jsQR(imageData.data, canvas.width, canvas.height);
 
                     if (qrCode) {
+                        clearInterval(scanInterval);
                         resultText.innerText = "Song gefunden: " + qrCode.data;
                         video.srcObject.getTracks().forEach(track => track.stop()); // Kamera stoppen
-                        window.location.href = "player.html?song=" + qrCode.data; // Weiterleitung zum Player
+                        window.location.href = "player.html?song=" + encodeURIComponent(qrCode.data); // Weiterleitung zur Player-Seite
                     }
                 }
-            }, 100); // Scan-Intervall (alle 100ms)
+            }, 100);
         }
     </script>
 </body>
