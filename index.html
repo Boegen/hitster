@@ -40,7 +40,7 @@
                 })
                 .catch((err) => {
                     console.error("Kamera-Zugriff verweigert", err);
-                    alert("Kamera-Zugriff wurde blockiert! Bitte in den Einstellungen aktivieren.");
+                    alert("Fehler: " + err.message);
                 });
         }
 
