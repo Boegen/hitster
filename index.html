@@ -20,9 +20,6 @@
     <p id="result">Scanne einen QR-Code...</p>
 
     <script>
-        .catch((err) => {
-            alert("Fehler: " + err.message);
-        });
         let video = document.getElementById("qr-video");
         let canvas = document.getElementById("qr-canvas");
         let ctx = canvas.getContext("2d");
