@@ -40,7 +40,7 @@
                 })
                 .catch((err) => {
                     console.error("Kamera-Zugriff verweigert", err);
-                    alert("Fehler: " + err.message);
+                    alert("Kamera-Zugriff wurde blockiert! Bitte in den Einstellungen aktivieren.");
                 });
         }
 
@@ -60,7 +60,7 @@
                         window.location.href = "player.html?song=" + encodeURIComponent(qrCode.data); // Weiterleitung zur Player-Seite
                     }
                 }
-            }, 100);
+            }, 300); // Reduziere CPU-Auslastung durch 300ms statt 100ms
         }
     </script>
 </body>
