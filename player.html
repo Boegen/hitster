@@ -5,41 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Song-Player</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f4f4f4;
-            padding: 20px;
-        }
-        button {
-            margin-top: 15px;
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            background-color: #28a745;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #218838;
-        }
+        body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f4; padding: 20px; }
+        button { margin-top: 15px; padding: 10px 20px; font-size: 16px; border: none; background-color: #28a745; color: white; border-radius: 5px; cursor: pointer; }
+        button:hover { background-color: #218838; }
     </style>
 </head>
 <body>
     <h2>🎵 Dein Song wird abgespielt</h2>
     <iframe id="youtubePlayer" width="300" height="200" frameborder="0" allow="autoplay; encrypted-media"></iframe>
     <br>
-    <button onclick="goBack()">⬅ Zurück zum Scanner</button>
+    <button onclick="window.location.href='index.html'">🔍 Neuen QR-Code scannen</button>
 
     <script>
         function getSongIdFromUrl() {
             const params = new URLSearchParams(window.location.search);
             return params.get("song");
-        }
-
-        function goBack() {
-            window.location.href = "index.html"; // Zurück zur Scanner-Seite
         }
 
         let songId = getSongIdFromUrl();
