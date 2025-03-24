@@ -55,12 +55,22 @@
 
                     if (qrCode) {
                         clearInterval(scanInterval);
-                        resultText.innerText = "Song gefunden: " + qrCode.data;
-                        video.srcObject.getTracks().forEach(track => track.stop()); // Kamera stoppen
-                        window.location.href = "player.html?song=" + encodeURIComponent(qrCode.data); // Weiterleitung zur Player-Seite
+                        let url = qrCode.data.trim();
+                        console.log("QR-Code erkannt:", url);
+                        
+                        if (url.startsWith("http")) {
+                            resultText.innerText = "Song gefunden: " + url;
+                            video.srcObject.getTracks().forEach(track => track.stop()); // Kamera stoppen
+                            setTimeout(() => {
+                                window.location.href = url; // Weiterleitung
+                            }, 1000); // Kleine Verzögerung zur Stabilität
+                        } else {
+                            console.error("Fehler: QR-Code enthält keine gültige URL:", url);
+                            alert("Fehler: Kein gültiger Link erkannt!");
+                        }
                     }
                 }
-            }, 300); // Reduziere CPU-Auslastung durch 300ms statt 100ms
+            }, 300);
         }
     </script>
 </body>
