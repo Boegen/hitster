@@ -8,12 +8,12 @@
         body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f4; padding: 20px; }
         button { margin-top: 15px; padding: 10px 20px; font-size: 16px; border: none; background-color: #28a745; color: white; border-radius: 5px; cursor: pointer; }
         button:hover { background-color: #218838; }
-        iframe { display: none; } /* Versteckt das Video */
+        iframe { width: 300px; height: 200px; border: none; } /* Sichtbares, aber minimiertes Video */
     </style>
 </head>
 <body>
     <h2>🎵 Dein Song wird abgespielt</h2>
-    <iframe id="youtubePlayer" width="0" height="0" frameborder="0" allow="autoplay; encrypted-media"></iframe> <!-- Verstecktes Video -->
+    <iframe id="youtubePlayer" frameborder="0" allow="autoplay; encrypted-media"></iframe>
     <br>
     <button onclick="window.location.href='index.html'">🔍 Neuen QR-Code scannen</button>
 
@@ -26,7 +26,7 @@
         let songId = getSongIdFromUrl();
         if (songId) {
             // YouTube Embed-URL anpassen, um nur den Ton abzuspielen
-            document.getElementById("youtubePlayer").src = `https://www.youtube.com/embed/${songId}?autoplay=1&controls=0&modestbranding=1&rel=0&showinfo=0&autohide=1&mute=0&enablejsapi=1`;
+            document.getElementById("youtubePlayer").src = `https://www.youtube.com/embed/${songId}?autoplay=1&controls=1&modestbranding=1&rel=0&showinfo=0&autohide=1&mute=0&enablejsapi=1`;
         } else {
             document.getElementById("youtubePlayer").innerHTML = "<p>Kein Song ausgewählt!</p>";
         }
