@@ -24,7 +24,7 @@
 
         let songId = getSongIdFromUrl();
         if (songId) {
-            document.getElementById("youtubePlayer").src = `https://www.youtube.com/embed/${songId}?autoplay=1&controls=0`;
+            document.getElementById("youtubePlayer").src = `https://www.youtube.com/embed/${songId}?autoplay=0&controls=0`;
         } else {
             document.getElementById("youtubePlayer").innerHTML = "<p>Kein Song ausgewählt!</p>";
         }
