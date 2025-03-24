@@ -8,29 +8,54 @@
         body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f4; padding: 20px; }
         button { margin-top: 15px; padding: 10px 20px; font-size: 16px; border: none; background-color: #28a745; color: white; border-radius: 5px; cursor: pointer; }
         button:hover { background-color: #218838; }
-        iframe { width: 300px; height: 200px; border: none; } /* Sichtbares, aber minimiertes Video */
+        #youtubePlayer { display: none; } /* Versteckt das Video */
     </style>
 </head>
 <body>
     <h2>🎵 Dein Song wird abgespielt</h2>
-    <iframe id="youtubePlayer" frameborder="0" allow="autoplay; encrypted-media"></iframe>
+    <div id="player"></div>
     <br>
+    <button id="playPauseButton">▶️ Play</button>
     <button onclick="window.location.href='index.html'">🔍 Neuen QR-Code scannen</button>
 
     <script>
-        function getSongIdFromUrl() {
-            const params = new URLSearchParams(window.location.search);
-            return params.get("song");
+        let player;
+        function onYouTubeIframeAPIReady() {
+            let songId = new URLSearchParams(window.location.search).get("song");
+            if (songId) {
+                player = new YT.Player('player', {
+                    height: '0', width: '0', /* Unsichtbarer Player */
+                    videoId: songId,
+                    playerVars: {
+                        'autoplay': 1,
+                        'controls': 0,
+                        'modestbranding': 1,
+                        'rel': 0,
+                        'showinfo': 0
+                    },
+                    events: {
+                        'onReady': onPlayerReady
+                    }
+                });
+            }
         }
 
-        let songId = getSongIdFromUrl();
-        if (songId) {
-            // YouTube Embed-URL anpassen, um nur den Ton abzuspielen
-            document.getElementById("youtubePlayer").src = `https://www.youtube.com/embed/${songId}?autoplay=1&controls=1&modestbranding=1&rel=0&showinfo=0&autohide=1&mute=0&enablejsapi=1`;
-        } else {
-            document.getElementById("youtubePlayer").innerHTML = "<p>Kein Song ausgewählt!</p>";
+        function onPlayerReady(event) {
+            event.target.playVideo();
         }
+
+        document.getElementById("playPauseButton").addEventListener("click", function() {
+            if (player && player.getPlayerState) {
+                if (player.getPlayerState() === 1) { // Läuft
+                    player.pauseVideo();
+                    this.textContent = "▶️ Play";
+                } else {
+                    player.playVideo();
+                    this.textContent = "⏸ Pause";
+                }
+            }
+        });
     </script>
+    <script src="https://www.youtube.com/iframe_api"></script>
 </body>
 </html>
-
