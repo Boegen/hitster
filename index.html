@@ -9,26 +9,49 @@
         body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f4; }
         #reader { width: 300px; margin: auto; }
         button { margin-top: 15px; padding: 10px 20px; font-size: 16px; border: none; background-color: #007bff; color: white; border-radius: 5px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
     </style>
 </head>
 <body>
     <h2>🎵 QR-Code scannen und Song starten</h2>
     <div id="reader"></div>
     <p id="result">Scanne einen QR-Code...</p>
-    <button onclick="startScanner()">📷 Scanner starten</button>
+    <button id="scannerButton" onclick="toggleScanner()">📷 Scanner starten</button>
 
     <script>
+        let scanner;
+        let isScannerActive = false;
+
+        function toggleScanner() {
+            if (isScannerActive) {
+                if (scanner) {
+                    scanner.stop().then(() => {
+                        console.log("Scanner gestoppt.");
+                        document.getElementById("result").innerText = "Scanner gestoppt";
+                        isScannerActive = false;
+                        document.getElementById("scannerButton").innerText = "📷 Scanner starten";
+                    }).catch((err) => {
+                        console.error("Fehler beim Stoppen des Scanners:", err);
+                    });
+                }
+            } else {
+                startScanner();
+                isScannerActive = true;
+                document.getElementById("scannerButton").innerText = "🛑 Scanner stoppen";
+            }
+        }
+
         function startScanner() {
-            const scanner = new Html5Qrcode("reader");
+            scanner = new Html5Qrcode("reader");
 
             scanner.start(
-                { facingMode: "environment" }, // Nutzt die Rückkamera (falls vorhanden)
+                { facingMode: "environment" },
                 { fps: 10, qrbox: 250 },
                 (decodedText) => {
                     console.log("QR-Code erkannt:", decodedText);
                     document.getElementById("result").innerText = "Song gefunden: " + decodedText;
                     scanner.stop();
-                    window.location.href = decodedText; // Automatische Weiterleitung
+                    window.location.href = decodedText;
                 },
                 (errorMessage) => {
                     console.warn("Kein QR-Code erkannt:", errorMessage);
