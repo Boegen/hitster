@@ -1,92 +1,129 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Song-Player</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f8f9fa;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
-        h2 {
-            color: #343a40;
-            font-size: 5vw;
-            margin-bottom: 20px;
-        }
-        button {
-            padding: 12px 24px;
-            font-size: 4vw;
-            border: none;
-            background-color: #28a745;
-            color: white;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        button:hover {
-            background-color: #218838;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Song-Player</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
 
-        @media (min-width: 600px) {
-            h2, button {
-                font-size: 22px;
-            }
-        }
-    </style>
+    h2 {
+      font-size: 6vw;
+      color: #222;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    #player {
+      margin-bottom: 2rem;
+    }
+
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    button {
+      padding: 1rem;
+      font-size: 4.5vw;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    #playPauseButton {
+      background-color: #007bff;
+      color: white;
+    }
+
+    #playPauseButton:hover {
+      background-color: #0056b3;
+      transform: scale(1.02);
+    }
+
+    .back-button {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .back-button:hover {
+      background-color: #5a6268;
+      transform: scale(1.02);
+    }
+
+    @media (min-width: 600px) {
+      h2 {
+        font-size: 32px;
+      }
+      button {
+        font-size: 18px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <h2>🎵 Dein Song wird abgespielt</h2>
-    <div id="player"></div>
-    <br>
+  <h2>🎵 Dein Song wird abgespielt</h2>
+  <div id="player"></div>
+
+  <div class="button-group">
     <button id="playPauseButton">⏸ Pause</button>
-    <button onclick="window.location.href='index.html'">🔍 Neuen QR-Code scannen</button>
+    <button class="back-button" onclick="window.location.href='index.html'">🔙 Zurück zur Startseite</button>
+  </div>
 
-    <script>
-        let player;
-        function onYouTubeIframeAPIReady() {
-            let songId = new URLSearchParams(window.location.search).get("song");
-            if (songId) {
-                player = new YT.Player('player', {
-                    height: '0', width: '0', /* Unsichtbarer Player */
-                    videoId: songId,
-                    playerVars: {
-                        'autoplay': 1,
-                        'controls': 0,
-                        'modestbranding': 1,
-                        'rel': 0,
-                        'showinfo': 0
-                    },
-                    events: {
-                        'onReady': onPlayerReady
-                    }
-                });
-            }
-        }
-
-        function onPlayerReady(event) {
-            event.target.playVideo();
-        }
-
-        document.getElementById("playPauseButton").addEventListener("click", function() {
-            if (player && player.getPlayerState) {
-                if (player.getPlayerState() === 1) { // Läuft
-                    player.pauseVideo();
-                    this.textContent = "▶️ Play";
-                } else {
-                    player.playVideo();
-                    this.textContent = "⏸ Pause";
-                }
-            }
+  <script>
+    let player;
+    function onYouTubeIframeAPIReady() {
+      let songId = new URLSearchParams(window.location.search).get("song");
+      if (songId) {
+        player = new YT.Player('player', {
+          height: '0',
+          width: '0',
+          videoId: songId,
+          playerVars: {
+            'autoplay': 1,
+            'controls': 0,
+            'modestbranding': 1,
+            'rel': 0,
+            'showinfo': 0
+          },
+          events: {
+            'onReady': onPlayerReady
+          }
         });
-    </script>
-    <script src="https://www.youtube.com/iframe_api"></script>
+      }
+    }
+
+    function onPlayerReady(event) {
+      event.target.playVideo();
+    }
+
+    document.getElementById("playPauseButton").addEventListener("click", function () {
+      if (player && player.getPlayerState) {
+        if (player.getPlayerState() === 1) {
+          player.pauseVideo();
+          this.textContent = "▶️ Play";
+        } else {
+          player.playVideo();
+          this.textContent = "⏸ Pause";
+        }
+      }
+    });
+  </script>
+  <script src="https://www.youtube.com/iframe_api"></script>
 </body>
 </html>
