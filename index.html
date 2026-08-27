@@ -15,7 +15,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
+            min-height: 100vh; 
         }
         h2 {
             color: #343a40;
@@ -56,8 +56,9 @@
             button { font-size: 18px; }
         }
 
+        /* --- Download-Bereich CSS --- */
         .download-section {
-            margin-top: 30px;
+            margin-bottom: 30px; /* Geändert: Der Abstand ist jetzt nach unten zum Scanner */
             padding: 20px;
             background: white;
             border-radius: 10px;
@@ -94,6 +95,9 @@
     </style>
 </head>
 <body>
+    <h2>🎵 QR-Code scannen und Song starten</h2>
+
+    <!-- --- Der Download-Bereich ist jetzt HIER OBEN --- -->
     <div class="download-section">
         <h3>🖨️ Karten als PDF laden</h3>
         <select id="pdfSelector">
@@ -108,7 +112,8 @@
         </select>
         <button id="downloadBtn" onclick="downloadSelectedPdf()">📥 Herunterladen</button>
     </div>
-    <h2>🎵 QR-Code scannen und Song starten</h2>
+
+    <!-- --- Und der Scanner kommt danach --- -->
     <div id="reader"></div>
     <p id="result">Scanne einen QR-Code...</p>
     <button id="scannerButton" onclick="toggleScanner()">📷 Scanner starten</button>
@@ -151,7 +156,7 @@
             
             let link = document.createElement("a");
             link.href = selectedFile;
-            link.download = selectedFile;
+            link.download = selectedFile; 
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
