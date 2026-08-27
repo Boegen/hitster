@@ -16,11 +16,74 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh; 
+            margin: 0;
+            position: relative; /* Wichtig für das Menü oben links */
         }
+
+        /* --- NEU: Container für das Menü oben links --- */
+        .top-menu-container {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            text-align: left;
+            z-index: 1000; /* Damit das Menü immer über dem Scanner liegt */
+        }
+
+        /* Button oben links */
+        #toggleMenuBtn {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+            width: auto; /* Überschreibt die 80% Breite der anderen Buttons */
+            max-width: none;
+        }
+
+        #toggleMenuBtn:hover {
+            background-color: #5a6268;
+        }
+
+        /* Das versteckte Download-Fenster */
+        .download-section {
+            display: none; /* Anfangs unsichtbar */
+            margin-top: 10px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #6c757d;
+            box-shadow: 0px 4px 8px rgba(0,0,0,0.2); /* Leichter Schatten */
+            width: 250px;
+            box-sizing: border-box;
+        }
+
+        .download-section h3 {
+            margin-top: 0;
+            font-size: 1.1rem;
+            color: #343a40;
+            margin-bottom: 10px;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            background-color: #f8f9fa;
+            cursor: pointer;
+        }
+
+        /* Hauptinhalt in der Mitte */
         h2 {
             color: #343a40;
             font-size: 5vw; 
             margin-bottom: 20px;
+            margin-top: 60px; /* Etwas Platz nach oben wegen des Menüs */
         }
         #reader {
             width: 90%;
@@ -50,57 +113,33 @@
         button:hover {
             background-color: #0056b3;
         }
-        @media (min-width: 768px) {
-            h2 { font-size: 24px; }
-            p { font-size: 18px; }
-            button { font-size: 18px; }
-        }
-
-        /* --- Download-Bereich CSS --- */
-        .download-section {
-            margin-bottom: 30px; /* Geändert: Der Abstand ist jetzt nach unten zum Scanner */
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            border: 2px solid #6c757d;
-            width: 90%;
-            max-width: 320px;
-            box-sizing: border-box;
-        }
-
-        .download-section h3 {
-            margin-top: 0;
-            font-size: 1.2rem;
-            color: #343a40;
-        }
-
-        select {
-            width: 100%;
-            padding: 10px;
-            font-size: 16px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            background-color: #f8f9fa;
-            cursor: pointer;
-        }
 
         #downloadBtn {
             background-color: #28a745; 
+            width: 100%; /* Füllt das Menü in der Breite aus */
+            font-size: 16px;
         }
 
         #downloadBtn:hover {
             background-color: #218838;
         }
+
+        @media (min-width: 768px) {
+            h2 { font-size: 24px; }
+            p { font-size: 18px; }
+            button { font-size: 18px; }
+        }
     </style>
 </head>
 <body>
-    <h2>🎵 QR-Code scannen und Song starten</h2>
 
-    <!-- --- Der Download-Bereich ist jetzt HIER OBEN --- -->
-    <div class="download-section">
-        <h3>🖨️ Karten als PDF laden</h3>
-        <select id="pdfSelector">
+    <!-- --- Menü oben links --- -->
+    <div class="top-menu-container">
+        <button id="toggleMenuBtn" onclick="toggleDownloadMenu()">📥 Downloads</button>
+        
+        <div class="download-section" id="downloadMenu">
+            <h3>🖨️ Karten laden</h3>
+            <select id="pdfSelector">
             <option value="Anime_Hitster.pdf">Anime Edition</option>
             <option value=deutsches_Hitster.pdf">Deutsche Lieder Edition</option>
             <option value="deutsches_HitsterV2.pdf">Deutsche Lieder V2 Edition</option>
@@ -109,16 +148,45 @@
             <option value="malenas_Hitster.pdf">Malenas Edition</option>
             <option value="evas_Hitster.pdf">Evas Edition</option>
             <option value="Ulis_Hitster.pdf">Ulis Edition</option>
-        </select>
-        <button id="downloadBtn" onclick="downloadSelectedPdf()">📥 Herunterladen</button>
+            </select>
+            <button id="downloadBtn" onclick="downloadSelectedPdf()">📥 Herunterladen</button>
+        </div>
     </div>
 
-    <!-- --- Und der Scanner kommt danach --- -->
+    <!-- --- Hauptseite (Scanner) --- -->
+    <h2>🎵 QR-Code scannen und Song starten</h2>
     <div id="reader"></div>
     <p id="result">Scanne einen QR-Code...</p>
     <button id="scannerButton" onclick="toggleScanner()">📷 Scanner starten</button>
 
     <script>
+        // --- Menü ein- und ausblenden ---
+        function toggleDownloadMenu() {
+            let menu = document.getElementById("downloadMenu");
+            if (menu.style.display === "block") {
+                menu.style.display = "none";
+            } else {
+                menu.style.display = "block";
+            }
+        }
+
+        // --- PDF Download-Funktion ---
+        function downloadSelectedPdf() {
+            let selector = document.getElementById("pdfSelector");
+            let selectedFile = selector.value;
+            
+            let link = document.createElement("a");
+            link.href = selectedFile;
+            link.download = selectedFile; 
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Optional: Menü nach dem Download wieder einklappen
+            document.getElementById("downloadMenu").style.display = "none";
+        }
+
+        // --- Scanner-Funktionen (Unverändert) ---
         let scanner;
         let isScannerActive = false;
 
@@ -148,18 +216,6 @@
                 },
                 (errorMessage) => console.warn("Kein QR-Code erkannt:", errorMessage)
             ).catch(err => console.error("Fehler beim Starten des Scanners:", err));
-        }
-
-        function downloadSelectedPdf() {
-            let selector = document.getElementById("pdfSelector");
-            let selectedFile = selector.value;
-            
-            let link = document.createElement("a");
-            link.href = selectedFile;
-            link.download = selectedFile; 
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
         }
     </script>
 </body>
