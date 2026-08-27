@@ -94,10 +94,6 @@
     </style>
 </head>
 <body>
-    <h2>🎵 QR-Code scannen und Song starten</h2>
-    <div id="reader"></div>
-    <p id="result">Scanne einen QR-Code...</p>
-    <button id="scannerButton" onclick="toggleScanner()">📷 Scanner starten</button>
     <div class="download-section">
         <h3>🖨️ Karten als PDF laden</h3>
         <select id="pdfSelector">
@@ -112,6 +108,10 @@
         </select>
         <button id="downloadBtn" onclick="downloadSelectedPdf()">📥 Herunterladen</button>
     </div>
+    <h2>🎵 QR-Code scannen und Song starten</h2>
+    <div id="reader"></div>
+    <p id="result">Scanne einen QR-Code...</p>
+    <button id="scannerButton" onclick="toggleScanner()">📷 Scanner starten</button>
 
     <script>
         let scanner;
